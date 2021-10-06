@@ -19,11 +19,32 @@
 
                                             <div class="form-group row">
                                                 <label class="col-sm-3 text-right control-label col-form-label">URL's</label>
+                                                
                                                 <div class="col-sm-9">
                                                     <textarea class="form-control" type="text" name="url" id="url"
                                                               value="{{ url }}"
                                                               placeholder="http://website.com,http://website2.com,http://website3.com"></textarea>
                                                 </div>
+                                                <hr>
+                                                <label class="col-sm-3 text-right control-label col-form-label" style="margin-top: 1rem;"><input type="radio" class="without-auth"  name= "login_cred" checked="true"> Without authentication</label>
+                                                <div class="col-sm-9"></div>
+                                                <label class="col-sm-3 text-right control-label col-form-label" style="margin-top: 1rem;"><input type="radio" name ="login_cred" value="" class="rec"></input> Recorder_sequence</label>
+                                                <div class="col-sm-9">
+                                                    <textarea class="form-control" type="text" name="url" id="json"
+                                                              value=""
+                                                              placeholder="Enter recorded sequence"></textarea>
+                                                </div>
+                                                <hr>
+                                                <label class="col-sm-3 text-right control-label col-form-label" style="margin-top: 1rem;"><input type="radio" name = "login_cred" value="" class="user_pass"></input> General Credentials</label>
+                                                <div class="col-sm-9">
+                                                    <textarea class="form-control" type="text" name="url" id="username"
+                                                              value=""
+                                                              placeholder="Enter username"></textarea>     
+                                                    <textarea class="form-control" type="text" name="url" id="password"
+                                                              value=""
+                                                              placeholder="Enter password"></textarea>       
+                                                </div>
+                                                
                                             </div>
                                         </div>
                                         <div class="card">
@@ -130,7 +151,7 @@
 {#<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>#}
 
 <script type="text/javascript">
-
+valued = {}
  $(document).on('submit', '#start_scan', function(e){
         var opt = false;
         e.preventDefault();
@@ -157,6 +178,24 @@
 
        if ($('[name="optradio2"]').is(':checked')){
            opt = true;
+           //console.log($('#json').val());
+           let json_data = ''
+           let username = ''
+           let password = ''
+           if($('.without-auth')[0].checked == true){
+
+           }
+           else if($('.rec')[0].checked == true){
+            json_data = JSON.stringify(JSON.parse($('#json').val()));
+            json_data = json_data.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+            console.log('buga')
+            console.log(json_data);
+           }
+           else{
+               username = $('#username').val();
+               password = $('#password').val();
+           }
+           
            $.ajax({
                     type:'POST',
                     url:'{% url 'burpscanner:burp_launch_scan' %}',
@@ -164,7 +203,10 @@
 
                        url:$('#url').val(),
                        project_id:$('#project_id').val(),
-                       csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                       csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                       sequence: json_data,
+                       username: username,
+                       password: password
                     },
                     sucess:function(){
 

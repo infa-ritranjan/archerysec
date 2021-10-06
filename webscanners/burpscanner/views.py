@@ -166,7 +166,11 @@ class BurpScanLaunch(APIView):
 
     def post(self, request):
         user = request.user
+        print(request.POST)
         target_url = request.POST.get("url")
+        recorded = request.POST.get("sequence")
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         project_uu_id = request.POST.get("project_id")
         project_id = (
             ProjectDb.objects.filter(uu_id=project_uu_id).values("id").get()["id"]
@@ -178,7 +182,10 @@ class BurpScanLaunch(APIView):
             print("Targets"), target
             scan_id = uuid.uuid4()
             try:
-                do_scan = burp_plugin.burp_scans(project_id, target, scan_id, user)
+                print('--------------------------------')
+                print(recorded)
+                print('- - - - - - - - - - - - - - - ')
+                do_scan = burp_plugin.burp_scans(project_id, target, scan_id, user, recorded, {'user':username, 'pass':password })
 
                 thread = threading.Thread(
                     target=do_scan.scan_launch,
